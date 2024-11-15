@@ -10,7 +10,7 @@ Requisitos do Sistema:
 7. Utilizar arquivos JSON como para persistência de dados. 
 """
 # Bibliotecas importadas
-from methods import *
+from utils.methods import *
 from dotenv import load_dotenv
 import os
 
@@ -33,10 +33,13 @@ print(spaces)
 
 # Variáveis de ambiente
 ip_address : str = os.getenv("ip")
+masked_ip_address : str = mask_ip(ip_address)
 
 while True:
     # Imprime a logo da empresa e um divisor, facilitando assim a visualização dos dados
     print(logo)
+    print(divider)
+    print(f"🔒 Conexão segura estabelecida com o serviço Cloud")
     print(divider)
     print("[1] - Monitoramento da placa leste")
     print("[2] - Monitoramento da placa oeste")
@@ -47,7 +50,7 @@ while True:
         opcao_usuario = int(input("Selecione uma opção > "))
     # Caso um valor não inteiro seja identificado, o programa gera uma exceção, retornando ao fluxo principal
     except ValueError:
-        alertMessage("Valor inválido, o programa aceita somente números!", spaces)
+        error_message("Valor inválido, o programa aceita somente números!", spaces)
         continue # O continue faz com que o usuário retorne ao fluxo principal do programa
 
     match opcao_usuario:
@@ -57,8 +60,8 @@ while True:
         case 99:
             print(spaces)
             print(logo)
-            print("Encerrando o programa...")
+            returnMessage("Programa encerrado com suceso!", spaces)
             break
         case _:
-            alertMessage("Opção inexistente!", spaces)
+            error_message("Opção inexistente!", spaces)
             continue

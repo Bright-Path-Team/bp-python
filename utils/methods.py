@@ -1,3 +1,22 @@
+import requests
+
+def check_info(ip : str, param : str) -> str:
+    """
+    Essa função deve requisitar ao servidor informações de acordo com o que for solicitado pelo usuario
+    """
+    url = f"http://{ip}:1026/v2/entities/urn:ngsi-ld:Iot:001/attrs/{param}"
+
+    payload = ""
+    headers = {
+    'fiware-service': 'smart',
+    'fiware-servicepath': '/',
+    'accept': 'application/json'
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    return response
+
 def error_message(message : str, spaces : str) -> None:
     """
     Função que utiliza o código Ansi para deixar o texto em vermelho

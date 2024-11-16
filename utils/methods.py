@@ -1,61 +1,164 @@
 import requests
+import os
+import json
+import matplotlib.pyplot as plt
+from datetime import datetime
 
-def check_info(ip : str, param : str) -> str:
-    """
-    Essa função deve requisitar ao servidor informações de acordo com o que for solicitado pelo usuario
-    """
-    url = f"http://{ip}:1026/v2/entities/urn:ngsi-ld:Iot:001/attrs/{param}"
+def plot_data(filepath="data/data.json") -> None:
+    
+    with open(filepath, "r") as file:
+        data : dict = json.load(file)
+    
+    timestamps : list = []
+    east_values : list = []
+    west_values : list = []
+    efficiency_values : list = []
 
-    payload = ""
-    headers = {
+    for timestamp, values in sorted(data.items()):
+        timestamps.append(datetime.fromisoformat(timestamp))
+        east_values.append(values["east"])
+        west_values.append(values["west"])
+        efficiency_values.append(values["efficiency"])
+    
+    plt.figure(figsize=(10, 6))
+
+    plt.plot(timestamps, east_values, label="Leste", marker="o")
+    plt.plot(timestamps, west_values, label="Oeste", marker="o")
+    plt.plot(timestamps, efficiency_values, label="Eficiencia", marker="^")
+    
+    plt.title("Valores da placa Leste & Oeste e Eficiência energética em função do tempo")
+    plt.xlabel("Timestamp")
+    plt.ylabel("Valores")
+    plt.legend()
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    
+    plt.tight_layout()
+    plt.show()
+
+
+def save_data(east, west, efficiency, filepath="data/data.json") -> None:
+    """
+    Essa função deve salvar os dados em um arquivo JSON
+    """
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    
+    timestamp = datetime.now().isoformat()
+    
+    new_entry : dict = {
+        timestamp: {
+            "east": east,
+            "west": west,
+            "efficiency": efficiency
+        }
+    }
+
+    if os.path.exists(filepath):
+        with open(filepath, "r") as file:
+            data : dict = json.load(file)  
+    else:
+        data : dict = {}
+    
+    data.update(new_entry)
+    
+    with open(filepath, "w") as file:
+        json.dump(data, file, indent=4)
+
+
+def check_connection(ip : str) -> bool:
+    """
+    Função para melhorar a experiência do usuário com o programa, se a conexão for estabelecida com sucesso, a função retorna True, caso contrário, False
+    """
+    try:
+        url : str = f"http://{ip}:4041/iot/about"
+
+        payload : dict = {}
+        headers : dict = {}
+        response : dict = requests.request("GET", url, headers=headers, data=payload)
+    except:
+        return False
+
+    if "libVersion" in response.text:
+        return True
+
+
+def request_info(ip : str, param : str) -> str:
+    """
+    Essa função deve requisitar ao servidor informações dos parametros de placa leste, oeste e eficiencia energetica
+    """
+    url : str = f"http://{ip}:1026/v2/entities/urn:ngsi-ld:Iot:001/attrs/{param}"
+
+    payload : str = ""
+    headers : dict = {
     'fiware-service': 'smart',
     'fiware-servicepath': '/',
     'accept': 'application/json'
     }
 
-    response = requests.request("GET", url, headers=headers, data=payload)
+    response : dict = requests.request("GET", url, headers=headers, data=payload)
+    response_json : dict = response.json()
 
-    return response
+    return response_json["value"]
 
-def error_message(message : str, spaces : str) -> None:
+
+def print_info(ip : str, param : str) -> None:
+    """
+    Essa função deve requisitar ao servidor informações de acordo com o que for solicitado pelo usuario e devolver um print em amarelo com esse dado
+    """
+    url : str = f"http://{ip}:1026/v2/entities/urn:ngsi-ld:Iot:001/attrs/{param}"
+
+    payload : str = ""
+    headers : dict = {
+    'fiware-service': 'smart',
+    'fiware-servicepath': '/',
+    'accept': 'application/json'
+    }
+
+    response : dict = requests.request("GET", url, headers=headers, data=payload)
+    response_json : dict = response.json()
+
+    if param == "east":
+        device = "da Placa Leste"
+    if param == "west":
+        device = "da Placa Oeste"
+    if param == "efficiency":
+        device = "de Eficiência energética (a média das duas placas)"
+
+    print(f"\033[35mO valor {device} é de {response_json["value"]}% de sua capacidade máxima\n\033[0m")
+
+
+def error_message(message : str) -> None:
     """
     Função que utiliza o código Ansi para deixar o texto em vermelho
 
     Código ANSI é uma sequência de escape iniciada por '\ 033[' seguida por um código de cor, e terminada por m. Para resetar o estilo (voltar ao padrão), usa-se o código '\ 033[0m'
     """
-    print(f"\033[31m {spaces}{message}\n \033[0m")
+    print(f"\033[31m{message}\n \033[0m")
 
 
-def returnMessage(message : str, spaces : str) -> None:
+def return_message(message : str) -> None:
     """
     Função que utiliza o código Ansi para deixar o texto em vermelho
 
     Código ANSI é uma sequência de escape iniciada por '\ 033[' seguida por um código de cor, e terminada por m. Para resetar o estilo (voltar ao padrão), usa-se o código '\ 033[0m'
     """
-    print(f"\033[32m {spaces}{message}\n \033[0m")
+    print(f"\033[32m{message}\n \033[0m")
 
 
-def mask_ip(ip : str) -> str:
-    # Divide o IP em partes usando "."
-    partes = ip.split('.')
-    
-    # Soma os dígitos de cada parte e aplica a fórmula
-    partes_criptografadas = []
-    for parte in partes:
-        soma_digitos = sum(int(digito) for digito in parte)  # Soma dos dígitos
-        valor_criptografado = soma_digitos * (9 / 3)  # Multiplicação por 3
-        partes_criptografadas.append(str(int(valor_criptografado)))  # Converte para string
-    
-    # Junta as partes criptografadas em um "IP"
-    ip_criptografado = '.'.join(partes_criptografadas)
-    return ip_criptografado
+def bright_message(message : str) -> None:
+    """
+    Função que utiliza o código Ansi para deixar o texto em amarelo
+
+    Código ANSI é uma sequência de escape iniciada por '\ 033[' seguida por um código de cor, e terminada por m. Para resetar o estilo (voltar ao padrão), usa-se o código '\ 033[0m'
+    """
+    print(f"\033[33m{message}\n \033[0m")
 
 
 def copy_values(ip : str) -> list:
     """
     Função para realizar a leitura dos valores do STH Comet e gerar uma lista para que os valores possam ser armazenados e se necessários manipulados
 
-    :return: List
+    :return: list
     """
     valueList : list = [1,2,3]
     return valueList

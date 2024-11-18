@@ -1,25 +1,48 @@
 import requests
 import os
 import json
+import time
 import matplotlib.pyplot as plt
 from datetime import datetime
 
+def timer(seconds : int) -> None:
+    """
+    Temporizador em segundos.
+
+    Args:
+        seconds (int): A quantidade de segundos para o temporizador.
+
+    Returns:
+        None
+    """
+    while seconds:
+        minutos, remaining_seconds = divmod(seconds, 60)
+        print(f"\033[33mUma tentativa de reconexão será feita em: {minutos:02}:{remaining_seconds:02}, sem isso, a aplicação não funcionará da maneira correta\033[0m", end='\r')
+        time.sleep(1)
+        seconds -= 1
+
+
 def plot_data(filepath="data/data.json") -> None:
+
     
     with open(filepath, "r") as file:
         data : dict = json.load(file)
-    
+
     timestamps : list = []
     east_values : list = []
     west_values : list = []
     efficiency_values : list = []
 
     for timestamp, values in sorted(data.items()):
-        timestamps.append(datetime.fromisoformat(timestamp))
+        try:
+            timestamps.append(datetime.fromisoformat(timestamp))
+        except ValueError:
+            error_message("ERRO: Os valores do arquivo JSON não estão no formato adequado de timestamp! Verifique e tente novamente")
+            return None
         east_values.append(values["east"])
         west_values.append(values["west"])
         efficiency_values.append(values["efficiency"])
-    
+
     plt.figure(figsize=(10, 6))
 
     plt.plot(timestamps, east_values, label="Leste", marker="o")

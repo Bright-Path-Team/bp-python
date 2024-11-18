@@ -16,7 +16,7 @@ Esse projeto foi desenvolvido inteiramente em python sem nenhum uso de Framework
     ```
     ip="IP-da-maquina"
     ```
-5. Certifique-se de que você tem todas as **dependências necessárias** (citadas na categoria acima); <br>
+5. Certifique-se de que você tem todas as [dependências necessária](https://github.com/Bright-Path-Team/bp-python?tab=readme-ov-file#dependencias); <br>
 6. Caso utilize **Linux** ou **Mac**, altere na linha `10`, o `"cls"` para `"clear"` para evitar erros de execução do programa;
 
 ## Requisitos do sistema

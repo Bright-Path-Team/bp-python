@@ -5,7 +5,8 @@ import os
 
 # Inicializa o dotenv para utilizar as variáveis de ambiente
 load_dotenv()
- # Altere conforme seu sistema operacional (Linux/Mac = clear | Windows = cls)
+
+# Altere conforme seu sistema operacional (Linux/Mac = clear | Windows = cls)
 clear_cmd : str = "cls"
 
 # Variáveis para armazenar um divisor que deixa o painel mais organizado para o usuário
@@ -22,18 +23,28 @@ divider : str = "\n" + "=" * 20 + "\n"
 os.system(clear_cmd)
 
 # Quando o programa inicia pela primeira vez e o servidor está desligado, o painel CMD fica desligado por um bom tempo, então para a UX, o usuário deve saber que o programa está operando realizando verificações
-return_message("Verificando a conexão com o servidor...")
+return_message("Verificando a conexão com o servidor, aguarde 20 segundos...")
 
-# Variáveis de ambiente
+# Variáveis de ambiente - coloque o IP da sua máquina virtual em um arquivo .env
 ip_address : str = os.getenv("ip")
 
 while True:
-     # Imprime a logo da empresa e dois divisores, facilitando assim a visualização dos dados
+    # Imprime a logo da empresa e dois divisores, facilitando assim a visualização dos dados
     print(divider)
     bright_message(logo)
     print(divider)
+    # Variavel que checa a conexão para facilitar a manipulação
+    connect_server = check_connection(ip_address)
+
+    # O programa verifica se a função retornou False (conexão não estabelecida) e cria um timer de 10 segundos para tentar outra conexão
+    if not connect_server:
+        timer(10)
+        os.system(clear_cmd)
+        continue
+
     # Operador que checa o status da conexão com o servidor para dar um status ao usuário
-    return_message(f"🔒 Conexão segura estabelecida com o serviço Cloud") if check_connection(ip_address) else error_message("⛔ Problema ao estabelecer conexão com o serviço cloud, o programa pode não funcionar corretamente!")
+    return_message(f"🔒 Conexão segura estabelecida com o serviço Cloud") if connect_server else error_message("⛔ Problema ao estabelecer conexão com o serviço cloud, o programa pode não funcionar corretamente!")
+
     print(divider)
 
     print("[1] - Monitoramento da placa leste")
@@ -41,7 +52,7 @@ while True:
     print("[3] - Monitoramento da eficiência energética")
     print("[4] - Salvar os dados em um arquivo JSON")
     print("[5] - Gerar gráfico de monitoramento")
-    print("[99] - Encerrar o programa")
+    print("[99] - Encerrar o programa")    
 
     # Verifica se o número fornecido pelo usuário é do tipo inteiro
     try:

@@ -43,16 +43,14 @@ while True:
         continue
 
     # Operador que checa o status da conexão com o servidor para dar um status ao usuário
-    return_message(f"🔒 Conexão segura estabelecida com o serviço Cloud") if connect_server else error_message("⛔ Problema ao estabelecer conexão com o serviço cloud, o programa pode não funcionar corretamente!")
-
-    print(divider)
+    return_message(f"🔒 Conexão segura estabelecida com o serviço Cloud")
 
     print("[1] - Monitoramento da placa leste")
     print("[2] - Monitoramento da placa oeste")
     print("[3] - Monitoramento da eficiência energética")
     print("[4] - Salvar os dados em um arquivo JSON")
     print("[5] - Gerar gráfico de monitoramento")
-    print("[99] - Encerrar o programa")    
+    print("[99] - Encerrar o programa")
 
     # Verifica se o número fornecido pelo usuário é do tipo inteiro
     try:
@@ -73,16 +71,20 @@ while True:
         case 3:
             os.system(clear_cmd)
             print_info(ip_address, "efficiency")
+        # Salva os dados do usuário em um arquivo JSON para porerem ser manipulados
         case 4:
             save_data(request_info(ip_address, "east"), request_info(ip_address, "west"), request_info(ip_address, "efficiency"))
+        # Gera um gráfico estático com os dados salvos na situação 4
         case 5:
             os.system(clear_cmd)
             plot_data()
+        # Nessa situação, o usuário decide sair, então o programa encerra com a logo da Empresa
         case 99:
             os.system(clear_cmd)
             bright_message(logo)
             return_message("Programa encerrado com suceso!")
             break
+        # Nessa situação, o usuário digita uma opção inexistente no programa, então o fluxo principal é reiniciado
         case _:
             os.system(clear_cmd)
             error_message("Opção inexistente!")

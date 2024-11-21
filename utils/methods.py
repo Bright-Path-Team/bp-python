@@ -23,8 +23,9 @@ def timer(seconds : int) -> None:
 
 
 def plot_data(filepath="data/data.json") -> None:
-
-    
+    """
+    Função para gerar um gráfico com base nos dados fornecidos/gerados do arquivo.json
+    """
     with open(filepath, "r") as file:
         data : dict = json.load(file)
 
@@ -34,11 +35,12 @@ def plot_data(filepath="data/data.json") -> None:
     efficiency_values : list = []
 
     for timestamp, values in sorted(data.items()):
+        # Verifica se o TIMESTAMP está no formato correto para a coleta dos horários/datas
         try:
             timestamps.append(datetime.fromisoformat(timestamp))
         except ValueError:
             error_message("ERRO: Os valores do arquivo JSON não estão no formato adequado de timestamp! Verifique e tente novamente")
-            return None
+            return None # Caso o formato esteja incorreto, o programa retorna None (nada) e não causa uma exceção acabando com o uso do programa pelo usuário
         east_values.append(values["east"])
         west_values.append(values["west"])
         efficiency_values.append(values["efficiency"])
@@ -47,7 +49,7 @@ def plot_data(filepath="data/data.json") -> None:
 
     plt.plot(timestamps, east_values, label="Leste", marker="o")
     plt.plot(timestamps, west_values, label="Oeste", marker="o")
-    plt.plot(timestamps, efficiency_values, label="Eficiencia", marker="^")
+    plt.plot(timestamps, efficiency_values, label="Eficiencia", marker="x")
     
     plt.title("Valores da placa Leste & Oeste e Eficiência energética em função do tempo")
     plt.xlabel("Timestamp")

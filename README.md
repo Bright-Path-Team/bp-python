@@ -1,7 +1,9 @@
 # Python - GS
 
 ## Descrição do projeto
-Esse projeto foi desenvolvido inteiramente em python sem nenhum uso de Frameworks com o principal objetivo de criar um painel informativo com as informações do [IoT](https://github.com/Bright-Path-Team/bp-edge), de um sistema de paineis solares que verifica a eficiência energética de duas placas solares (uma a leste e a outra a oeste) e a média da eficiência energética de cada uma delas!
+Este projeto tem como objetivo abordar a crescente necessidade de soluções acessíveis de energias renováveis, com foco especial em comunidades e regiões mais carentes. A iniciativa utiliza python para conexão a dispositivos e o monitoramento de dados relacionados ao desempenho na coleta e no armazenamento de energia solar.
+
+Essa abordagem não apenas explora soluções tecnológicas inovadoras, mas também contribui para a democratização do acesso à energia sustentável em locais onde a infraestrutura convencional é limitada.
 
 ## Dependencias
 - [Python](https://www.python.org/); <br>
